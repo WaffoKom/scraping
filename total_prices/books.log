@@ -1,0 +1,1 @@
+2024-08-09 17:24:28.483 | ERROR    | __main__:extract_price_from_page:92 - Aucun nombre n'a ete trouve 'NoneType' object has no attribute 'group'

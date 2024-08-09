@@ -3,6 +3,7 @@ from selectolax.parser import HTMLParser
 from loguru import logger
 import sys
 import requests
+import re
 
 logger.remove()
 logger.add("books.log", rotation="600kb", level="WARNING")
@@ -79,8 +80,20 @@ def extract_price_from_page(tree: HTMLParser) -> float:
     :return: Prix unitaire du livre
     """
     price_node = tree.css_first("p.price_color")
-    print(price_node)
-    return 1.0
+    if price_node:
+        price_string = price_node.text()
+
+    else:
+        print(f"Aucun noeuds ne comprenant le prix n'a ete trouve")
+        return 0.0
+    try:
+        price = (re.search(r"\d+(?:\.\d+)?", price_string).group())
+    except (IndexError, ValueError, TypeError, AttributeError) as e:
+        logger.error(f"Aucun nombre n'a ete trouve {e}")
+        return 0.0
+    else:
+        print(float(price))
+        return float(price)
 
 
 def extract_stock_quantity_from_page(tree: HTMLParser) -> int:
@@ -93,7 +106,7 @@ def extract_stock_quantity_from_page(tree: HTMLParser) -> int:
     return 1
 
 
-def books():
+def main():
     all_books_urls = get_all_books_urls(url=BASE_URL)
     total_price = 0
     for book_url in all_books_urls:
@@ -103,5 +116,5 @@ def books():
     return total_price
 
 
-if __name__ == "__books__":
+if __name__ == "__main__":
     get_book_price(url=BASE_URL)
