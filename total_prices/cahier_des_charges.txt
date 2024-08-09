@@ -1,0 +1,14 @@
+
+
+-Fonction a coder
+
+Fonction a creer pour recupere l'url de la page suivante:
+
+        -Recuperer a partir d'une page HTML ou de l'url directement ?
+
+Fonction qui a partir de l'url d'un livre va calculer le prix
+Fonction qui a partir du HTML va recuperer le prix
+Fonction pour recuperer la quantite de livre disponible a partir du HTML
+Fonction pour recuperer les urls de tous les livres de la bibliotheque
+Fonction pour recuperer les urls sur une page specifique
+
