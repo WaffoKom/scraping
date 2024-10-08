@@ -51,6 +51,8 @@ def get_all_books_urls_on_page(tree: HTMLParser) -> list[str]:
     :param tree: Objet HTMLParser de la page
     :return: Liste des URLS de tous les livres sur toute la page
     """
+    books_links_nodes = tree.css("h3 a")
+    print(books_links_nodes)
     pass
 
 
@@ -67,7 +69,6 @@ def get_book_price(url: str) -> float:
         price = extract_price_from_page(tree=tree)
         stock = extract_stock_quantity_from_page(tree=tree)
         return price * stock
-
     except requests.exceptions.RequestException as e:
         logger.error(f"Erreur lors de la requette HTTP : {e}")
         return 0.0
@@ -103,18 +104,29 @@ def extract_stock_quantity_from_page(tree: HTMLParser) -> int:
     :param tree:
     :return: Le nombre de livre en stock
     """
-    return 1
+    try:
+        stock_node = tree.css_first("p.instock.availability")
+        return int(re.findall(r"\d+", stock_node.text())[0])
+    except AttributeError as e:
+        logger.error(f"Aucun noeud 'p.instock.availability' n'as ete trouver sur la page : {e}")
+        return 0
+    except IndexError as e:
+        logger.error(f"Aucun nombre n'as ete trouve :{e}")
+        return 0
 
 
 def main():
     all_books_urls = get_all_books_urls(url=BASE_URL)
-    total_price = 0
+    total_price = []
     for book_url in all_books_urls:
         price = get_book_price(url=book_url)
-        total_price += price
-
-    return total_price
+        total_price.append(price)
+    return sum(total_price)
 
 
 if __name__ == "__main__":
-    get_book_price(url=BASE_URL)
+    # url = "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+    # print(get_book_price(url=BASE_URL))
+    r = requests.get(BASE_URL)
+    tree = HTMLParser(r.text)
+    get_all_books_urls_on_page(tree=tree)
